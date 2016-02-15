@@ -15,7 +15,7 @@ CORS middleware with origin validation and preflight handling
 Add to your Gemfile:
 
 ```ruby
-gem 'philiprehberger-cors'
+gem "philiprehberger-cors"
 ```
 
 Or install directly:
@@ -80,8 +80,8 @@ use Philiprehberger::Cors::Middleware,
 
 ```bash
 bundle install
-bundle exec rspec      # Run tests
-bundle exec rubocop    # Check code style
+bundle exec rspec
+bundle exec rubocop
 ```
 
 ## License
