@@ -27,7 +27,7 @@ gem install philiprehberger-cors
 ## Usage
 
 ```ruby
-require 'philiprehberger/cors'
+require "philiprehberger/cors"
 
 use Philiprehberger::Cors::Middleware,
   origins: ['https://example.com'],
