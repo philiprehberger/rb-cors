@@ -285,6 +285,56 @@ RSpec.describe Philiprehberger::Cors::Middleware do
     end
   end
 
+  describe 'regex origin matching' do
+    let(:app) { described_class.new(inner_app, origins: [/\.example\.com$/]) }
+
+    it 'allows matching regex origin' do
+      _status, headers, _body = app.call(env_for(origin: 'http://sub.example.com'))
+      expect(headers['Access-Control-Allow-Origin']).to eq('http://sub.example.com')
+    end
+
+    it 'rejects non-matching regex origin' do
+      _status, headers, _body = app.call(env_for(origin: 'http://evil.com'))
+      expect(headers['Access-Control-Allow-Origin']).to be_nil
+    end
+
+    it 'works with mixed string and regex origins' do
+      mixed_app = described_class.new(inner_app, origins: ['http://exact.com', /\.example\.com$/])
+      _status, headers, _body = mixed_app.call(env_for(origin: 'http://exact.com'))
+      expect(headers['Access-Control-Allow-Origin']).to eq('http://exact.com')
+    end
+
+    it 'works with regex in preflight' do
+      env = env_for(method: 'OPTIONS', origin: 'http://sub.example.com', extras: {
+                      'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'POST'
+                    })
+      status, headers, _body = app.call(env)
+      expect(status).to eq(204)
+      expect(headers['Access-Control-Allow-Origin']).to eq('http://sub.example.com')
+    end
+  end
+
+  describe 'expose_headers' do
+    let(:app) { described_class.new(inner_app, expose_headers: %w[X-Request-Id X-Total-Count]) }
+
+    it 'includes Access-Control-Expose-Headers' do
+      _status, headers, _body = app.call(env_for)
+      expect(headers['Access-Control-Expose-Headers']).to eq('X-Request-Id, X-Total-Count')
+    end
+
+    it 'omits header when expose_headers is empty' do
+      empty_app = described_class.new(inner_app)
+      _status, headers, _body = empty_app.call(env_for)
+      expect(headers['Access-Control-Expose-Headers']).to be_nil
+    end
+
+    it 'works with single header' do
+      single_app = described_class.new(inner_app, expose_headers: ['X-Request-Id'])
+      _status, headers, _body = single_app.call(env_for)
+      expect(headers['Access-Control-Expose-Headers']).to eq('X-Request-Id')
+    end
+  end
+
   describe 'methods are uppercased' do
     it 'uppercases lowercase method names' do
       app = described_class.new(inner_app, origins: '*', methods: %w[get post])

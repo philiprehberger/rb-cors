@@ -23,3 +23,10 @@ body:
       description: If applicable, show how you'd like the API to look
     validations:
       required: false
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Any alternative solutions or features you've considered
+    validations:
+      required: false

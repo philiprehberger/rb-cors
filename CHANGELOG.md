@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-04-04
+
+### Added
+- Regex origin matching support (e.g., `/\.example\.com$/`)
+- `expose_headers` option for `Access-Control-Expose-Headers`
+- GitHub issue template gem version field
+- Feature request "Alternatives considered" field
+
 ## [0.1.5] - 2026-03-31
 
 ### Added

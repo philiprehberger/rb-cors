@@ -50,6 +50,21 @@ use Philiprehberger::Cors::Middleware,
   origins: ['https://app.example.com', 'https://admin.example.com']
 ```
 
+### Regex Origins
+
+```ruby
+use Philiprehberger::Cors::Middleware,
+  origins: [/\.example\.com$/, "http://localhost:3000"]
+```
+
+### Expose Headers
+
+```ruby
+use Philiprehberger::Cors::Middleware,
+  origins: "*",
+  expose_headers: ["X-Request-Id", "X-Total-Count"]
+```
+
 ### With Credentials
 
 ```ruby
@@ -64,7 +79,7 @@ use Philiprehberger::Cors::Middleware,
 
 | Method | Description |
 |--------|-------------|
-| `.new(app, origins:, methods:, headers:, credentials:, max_age:)` | Create CORS middleware |
+| `.new(app, origins:, methods:, headers:, credentials:, max_age:, expose_headers:)` | Create CORS middleware |
 
 ### Options
 
@@ -75,6 +90,7 @@ use Philiprehberger::Cors::Middleware,
 | `headers` | `Content-Type Accept Authorization` | Allowed request headers |
 | `credentials` | `false` | Allow credentials |
 | `max_age` | `86400` | Preflight cache duration in seconds |
+| `expose_headers` | `[]` | Array of header names clients can read |
 
 ## Development
 

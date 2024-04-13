@@ -25,13 +25,14 @@ module Philiprehberger
       # @param credentials [Boolean] whether to allow credentials
       # @param max_age [Integer] preflight cache duration in seconds
       def initialize(app, origins: '*', methods: DEFAULT_METHODS, headers: DEFAULT_HEADERS,
-                     credentials: false, max_age: DEFAULT_MAX_AGE)
+                     credentials: false, max_age: DEFAULT_MAX_AGE, expose_headers: [])
         @app = app
-        @origins = Array(origins)
+        @origins = origins
         @methods = Array(methods).map(&:upcase)
         @headers = Array(headers)
         @credentials = credentials
         @max_age = max_age
+        @expose_headers = Array(expose_headers)
       end
 
       # Process a Rack request.
@@ -60,7 +61,14 @@ module Philiprehberger
       end
 
       def origin_allowed?(origin)
-        @origins.include?('*') || @origins.include?(origin)
+        return true if @origins == '*'
+
+        Array(@origins).any? do |allowed|
+          case allowed
+          when Regexp then allowed.match?(origin)
+          else allowed == origin
+          end
+        end
       end
 
       def preflight_response(origin)
@@ -72,19 +80,20 @@ module Philiprehberger
           'Content-Type' => 'text/plain'
         }
         headers['Access-Control-Allow-Credentials'] = 'true' if @credentials
-        headers['Vary'] = 'Origin' unless @origins.include?('*')
+        headers['Vary'] = 'Origin' unless @origins == '*'
         [204, headers, []]
       end
 
       def add_cors_headers(headers, origin)
         headers['Access-Control-Allow-Origin'] = allowed_origin(origin)
         headers['Access-Control-Allow-Credentials'] = 'true' if @credentials
-        headers['Vary'] = 'Origin' unless @origins.include?('*')
+        headers['Vary'] = 'Origin' unless @origins == '*'
+        headers['Access-Control-Expose-Headers'] = @expose_headers.join(', ') unless @expose_headers.empty?
         headers
       end
 
       def allowed_origin(origin)
-        if @origins.include?('*') && !@credentials
+        if @origins == '*' && !@credentials
           '*'
         else
           origin
