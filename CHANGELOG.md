@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-04-09
+
+### Added
+- `headers: :reflect` option to echo `Access-Control-Request-Headers` back on preflight, useful when the allowed header set is dynamic
+- `allow_private_network` option implementing Chrome's Private Network Access preflight extension (`Access-Control-Allow-Private-Network`)
+- Preflight `Vary` header now includes `Access-Control-Request-Method` (and `Access-Control-Request-Headers` when reflecting) for correct shared-cache behavior
+- Expanded YARD documentation on `Middleware#initialize`
+
 ## [0.2.0] - 2026-04-04
 
 ### Added

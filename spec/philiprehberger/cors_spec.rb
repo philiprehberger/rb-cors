@@ -272,7 +272,8 @@ RSpec.describe Philiprehberger::Cors::Middleware do
                       'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'GET'
                     })
       _status, headers, _body = specific_app.call(env)
-      expect(headers['Vary']).to eq('Origin')
+      expect(headers['Vary']).to include('Origin')
+      expect(headers['Vary']).to include('Access-Control-Request-Method')
     end
 
     it 'does not include Vary for wildcard origin preflight' do
@@ -332,6 +333,69 @@ RSpec.describe Philiprehberger::Cors::Middleware do
       single_app = described_class.new(inner_app, expose_headers: ['X-Request-Id'])
       _status, headers, _body = single_app.call(env_for)
       expect(headers['Access-Control-Expose-Headers']).to eq('X-Request-Id')
+    end
+  end
+
+  describe 'headers: :reflect' do
+    let(:app) { described_class.new(inner_app, origins: ['https://app.com'], headers: :reflect) }
+
+    it 'echoes Access-Control-Request-Headers on preflight' do
+      env = env_for(method: 'OPTIONS', origin: 'https://app.com', extras: {
+                      'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'POST',
+                      'HTTP_ACCESS_CONTROL_REQUEST_HEADERS' => 'X-Custom-One, X-Custom-Two'
+                    })
+      _status, headers, _body = app.call(env)
+      expect(headers['Access-Control-Allow-Headers']).to eq('X-Custom-One, X-Custom-Two')
+    end
+
+    it 'returns empty string when request has no requested headers' do
+      env = env_for(method: 'OPTIONS', origin: 'https://app.com', extras: {
+                      'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'GET'
+                    })
+      _status, headers, _body = app.call(env)
+      expect(headers['Access-Control-Allow-Headers']).to eq('')
+    end
+
+    it 'adds Access-Control-Request-Headers to Vary' do
+      env = env_for(method: 'OPTIONS', origin: 'https://app.com', extras: {
+                      'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'POST',
+                      'HTTP_ACCESS_CONTROL_REQUEST_HEADERS' => 'X-Foo'
+                    })
+      _status, headers, _body = app.call(env)
+      expect(headers['Vary']).to include('Access-Control-Request-Headers')
+    end
+  end
+
+  describe 'allow_private_network' do
+    let(:app) do
+      described_class.new(inner_app, origins: ['https://app.com'], allow_private_network: true)
+    end
+
+    it 'sets Access-Control-Allow-Private-Network when requested' do
+      env = env_for(method: 'OPTIONS', origin: 'https://app.com', extras: {
+                      'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'POST',
+                      'HTTP_ACCESS_CONTROL_REQUEST_PRIVATE_NETWORK' => 'true'
+                    })
+      _status, headers, _body = app.call(env)
+      expect(headers['Access-Control-Allow-Private-Network']).to eq('true')
+    end
+
+    it 'omits header when private network not requested' do
+      env = env_for(method: 'OPTIONS', origin: 'https://app.com', extras: {
+                      'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'POST'
+                    })
+      _status, headers, _body = app.call(env)
+      expect(headers).not_to have_key('Access-Control-Allow-Private-Network')
+    end
+
+    it 'omits header when allow_private_network is false (default)' do
+      default_app = described_class.new(inner_app, origins: ['https://app.com'])
+      env = env_for(method: 'OPTIONS', origin: 'https://app.com', extras: {
+                      'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'POST',
+                      'HTTP_ACCESS_CONTROL_REQUEST_PRIVATE_NETWORK' => 'true'
+                    })
+      _status, headers, _body = default_app.call(env)
+      expect(headers).not_to have_key('Access-Control-Allow-Private-Network')
     end
   end
 
