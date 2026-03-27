@@ -57,8 +57,8 @@ RSpec.describe Philiprehberger::Cors::Middleware do
   describe 'preflight request' do
     it 'responds to OPTIONS with CORS headers' do
       env = env_for(method: 'OPTIONS', extras: {
-        'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'POST'
-      })
+                      'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'POST'
+                    })
       status, headers, _body = app.call(env)
       expect(status).to eq(204)
       expect(headers['Access-Control-Allow-Origin']).to eq('*')
@@ -68,24 +68,24 @@ RSpec.describe Philiprehberger::Cors::Middleware do
 
     it 'includes allowed headers' do
       env = env_for(method: 'OPTIONS', extras: {
-        'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'POST'
-      })
+                      'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'POST'
+                    })
       _status, headers, _body = app.call(env)
       expect(headers['Access-Control-Allow-Headers']).to include('Content-Type')
     end
 
     it 'returns empty body for preflight' do
       env = env_for(method: 'OPTIONS', extras: {
-        'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'GET'
-      })
+                      'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'GET'
+                    })
       _status, _headers, body = app.call(env)
       expect(body).to eq([])
     end
 
     it 'returns Content-Type text/plain for preflight' do
       env = env_for(method: 'OPTIONS', extras: {
-        'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'GET'
-      })
+                      'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'GET'
+                    })
       _status, headers, _body = app.call(env)
       expect(headers['Content-Type']).to eq('text/plain')
     end
@@ -126,8 +126,8 @@ RSpec.describe Philiprehberger::Cors::Middleware do
 
     it 'rejects disallowed origin on preflight' do
       env = env_for(method: 'OPTIONS', origin: 'https://evil.com', extras: {
-        'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'POST'
-      })
+                      'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'POST'
+                    })
       status, headers, _body = app.call(env)
       expect(status).to eq(200)
       expect(headers).not_to have_key('Access-Control-Allow-Origin')
@@ -173,8 +173,8 @@ RSpec.describe Philiprehberger::Cors::Middleware do
 
     it 'includes credentials header on preflight' do
       env = env_for(method: 'OPTIONS', origin: 'https://app.com', extras: {
-        'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'POST'
-      })
+                      'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'POST'
+                    })
       _status, headers, _body = app.call(env)
       expect(headers['Access-Control-Allow-Credentials']).to eq('true')
     end
@@ -182,8 +182,8 @@ RSpec.describe Philiprehberger::Cors::Middleware do
     it 'echoes origin on preflight with credentials and wildcard' do
       cred_app = described_class.new(inner_app, origins: '*', credentials: true)
       env = env_for(method: 'OPTIONS', origin: 'https://any.com', extras: {
-        'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'GET'
-      })
+                      'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'GET'
+                    })
       _status, headers, _body = cred_app.call(env)
       expect(headers['Access-Control-Allow-Origin']).to eq('https://any.com')
     end
@@ -203,16 +203,16 @@ RSpec.describe Philiprehberger::Cors::Middleware do
 
     it 'returns custom methods in preflight' do
       env = env_for(method: 'OPTIONS', extras: {
-        'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'POST'
-      })
+                      'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'POST'
+                    })
       _status, headers, _body = app.call(env)
       expect(headers['Access-Control-Allow-Methods']).to eq('GET, POST')
     end
 
     it 'returns custom headers in preflight' do
       env = env_for(method: 'OPTIONS', extras: {
-        'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'GET'
-      })
+                      'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'GET'
+                    })
       _status, headers, _body = app.call(env)
       expect(headers['Access-Control-Allow-Headers']).to eq('X-Custom, Authorization')
     end
@@ -223,8 +223,8 @@ RSpec.describe Philiprehberger::Cors::Middleware do
 
     it 'uses custom max_age' do
       env = env_for(method: 'OPTIONS', extras: {
-        'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'GET'
-      })
+                      'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'GET'
+                    })
       _status, headers, _body = app.call(env)
       expect(headers['Access-Control-Max-Age']).to eq('3600')
     end
@@ -232,8 +232,8 @@ RSpec.describe Philiprehberger::Cors::Middleware do
     it 'uses default max_age of 86400' do
       default_app = described_class.new(inner_app, origins: '*')
       env = env_for(method: 'OPTIONS', extras: {
-        'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'GET'
-      })
+                      'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'GET'
+                    })
       _status, headers, _body = default_app.call(env)
       expect(headers['Access-Control-Max-Age']).to eq('86400')
     end
@@ -243,8 +243,8 @@ RSpec.describe Philiprehberger::Cors::Middleware do
     it 'includes all default methods in preflight' do
       default_app = described_class.new(inner_app, origins: '*')
       env = env_for(method: 'OPTIONS', extras: {
-        'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'GET'
-      })
+                      'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'GET'
+                    })
       _status, headers, _body = default_app.call(env)
       allowed = headers['Access-Control-Allow-Methods']
       %w[GET POST PUT PATCH DELETE HEAD OPTIONS].each do |m|
@@ -255,8 +255,8 @@ RSpec.describe Philiprehberger::Cors::Middleware do
     it 'includes default headers in preflight' do
       default_app = described_class.new(inner_app, origins: '*')
       env = env_for(method: 'OPTIONS', extras: {
-        'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'GET'
-      })
+                      'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'GET'
+                    })
       _status, headers, _body = default_app.call(env)
       allowed = headers['Access-Control-Allow-Headers']
       expect(allowed).to include('Content-Type')
@@ -269,8 +269,8 @@ RSpec.describe Philiprehberger::Cors::Middleware do
     it 'includes Vary for specific origin preflight' do
       specific_app = described_class.new(inner_app, origins: ['https://specific.com'])
       env = env_for(method: 'OPTIONS', origin: 'https://specific.com', extras: {
-        'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'GET'
-      })
+                      'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'GET'
+                    })
       _status, headers, _body = specific_app.call(env)
       expect(headers['Vary']).to eq('Origin')
     end
@@ -278,8 +278,8 @@ RSpec.describe Philiprehberger::Cors::Middleware do
     it 'does not include Vary for wildcard origin preflight' do
       wildcard_app = described_class.new(inner_app, origins: '*')
       env = env_for(method: 'OPTIONS', extras: {
-        'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'GET'
-      })
+                      'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'GET'
+                    })
       _status, headers, _body = wildcard_app.call(env)
       expect(headers).not_to have_key('Vary')
     end
@@ -289,8 +289,8 @@ RSpec.describe Philiprehberger::Cors::Middleware do
     it 'uppercases lowercase method names' do
       app = described_class.new(inner_app, origins: '*', methods: %w[get post])
       env = env_for(method: 'OPTIONS', extras: {
-        'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'GET'
-      })
+                      'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'GET'
+                    })
       _status, headers, _body = app.call(env)
       expect(headers['Access-Control-Allow-Methods']).to eq('GET, POST')
     end

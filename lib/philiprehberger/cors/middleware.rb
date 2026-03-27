@@ -42,9 +42,7 @@ module Philiprehberger
         origin = env['HTTP_ORIGIN']
         return @app.call(env) unless origin
 
-        unless origin_allowed?(origin)
-          return @app.call(env)
-        end
+        return @app.call(env) unless origin_allowed?(origin)
 
         if preflight?(env)
           preflight_response(origin)
