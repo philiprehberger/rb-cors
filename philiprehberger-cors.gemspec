@@ -10,8 +10,8 @@ Gem::Specification.new do |spec|
 
   spec.summary = 'CORS middleware with origin validation and preflight handling'
   spec.description = 'Rack-compatible CORS middleware supporting configurable allowed origins, ' \
-                       'methods, headers, credentials, and max-age. Handles preflight OPTIONS ' \
-                       'requests and sets appropriate Access-Control headers.'
+                     'methods, headers, credentials, and max-age. Handles preflight OPTIONS ' \
+                     'requests and sets appropriate Access-Control headers.'
   spec.homepage = 'https://philiprehberger.com/open-source-packages/ruby/philiprehberger-cors'
   spec.license = 'MIT'
 
