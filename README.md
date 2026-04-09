@@ -65,6 +65,26 @@ use Philiprehberger::Cors::Middleware,
   expose_headers: ["X-Request-Id", "X-Total-Count"]
 ```
 
+### Reflect Request Headers
+
+Echo whatever the client sent in `Access-Control-Request-Headers`:
+
+```ruby
+use Philiprehberger::Cors::Middleware,
+  origins: ['https://app.example.com'],
+  headers: :reflect
+```
+
+### Private Network Access
+
+Opt into Chrome's Private Network Access preflight extension:
+
+```ruby
+use Philiprehberger::Cors::Middleware,
+  origins: ['https://app.example.com'],
+  allow_private_network: true
+```
+
 ### With Credentials
 
 ```ruby
@@ -79,7 +99,7 @@ use Philiprehberger::Cors::Middleware,
 
 | Method | Description |
 |--------|-------------|
-| `.new(app, origins:, methods:, headers:, credentials:, max_age:, expose_headers:)` | Create CORS middleware |
+| `.new(app, origins:, methods:, headers:, credentials:, max_age:, expose_headers:, allow_private_network:)` | Create CORS middleware |
 
 ### Options
 
@@ -87,10 +107,11 @@ use Philiprehberger::Cors::Middleware,
 |--------|---------|-------------|
 | `origins` | `'*'` | Allowed origins (string or array) |
 | `methods` | `GET POST PUT PATCH DELETE HEAD OPTIONS` | Allowed HTTP methods |
-| `headers` | `Content-Type Accept Authorization` | Allowed request headers |
+| `headers` | `Content-Type Accept Authorization` | Allowed request headers, or `:reflect` to echo `Access-Control-Request-Headers` |
 | `credentials` | `false` | Allow credentials |
 | `max_age` | `86400` | Preflight cache duration in seconds |
 | `expose_headers` | `[]` | Array of header names clients can read |
+| `allow_private_network` | `false` | Enable Chrome's Private Network Access preflight header |
 
 ## Development
 
