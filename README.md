@@ -93,6 +93,18 @@ use Philiprehberger::Cors::Middleware,
   credentials: true
 ```
 
+### Inspecting Configured Origins
+
+Expose the configured origin list for logging or diagnostics:
+
+```ruby
+middleware = Philiprehberger::Cors::Middleware.new(app, origins: ['https://app.example.com'])
+middleware.allowed_origins # => ["https://app.example.com"]
+
+wildcard = Philiprehberger::Cors::Middleware.new(app, origins: '*')
+wildcard.allowed_origins   # => :any
+```
+
 ## API
 
 ### `Cors::Middleware`
@@ -100,6 +112,7 @@ use Philiprehberger::Cors::Middleware,
 | Method | Description |
 |--------|-------------|
 | `.new(app, origins:, methods:, headers:, credentials:, max_age:, expose_headers:, allow_private_network:)` | Create CORS middleware |
+| `#allowed_origins` | Return the configured origins (Array) or `:any` when wildcard |
 
 ### Options
 
