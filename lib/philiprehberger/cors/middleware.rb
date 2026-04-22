@@ -59,6 +59,19 @@ module Philiprehberger
         @allow_private_network = allow_private_network
       end
 
+      # Return the configured origins for introspection or logging.
+      #
+      # Wildcard configurations (+'*'+) are surfaced as the symbol +:any+.
+      # Any other configuration is normalized to an Array of the original
+      # entries (strings and/or Regexp objects).
+      #
+      # @return [Array<String, Regexp>, Symbol] configured origins, or +:any+
+      def allowed_origins
+        return :any if @origins == '*'
+
+        Array(@origins)
+      end
+
       # Process a Rack request.
       #
       # @param env [Hash] the Rack environment

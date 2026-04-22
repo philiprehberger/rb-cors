@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-04-16
+
+### Added
+- `Middleware#allowed_origins` reader — returns the list of configured origins for introspection or logging, or the symbol `:any` when wildcard (`'*'`) is configured
+
 ## [0.3.0] - 2026-04-09
 
 ### Added

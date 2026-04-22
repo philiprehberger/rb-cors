@@ -409,4 +409,44 @@ RSpec.describe Philiprehberger::Cors::Middleware do
       expect(headers['Access-Control-Allow-Methods']).to eq('GET, POST')
     end
   end
+
+  describe '#allowed_origins' do
+    it 'returns :any when wildcard is configured' do
+      app = described_class.new(inner_app, origins: '*')
+      expect(app.allowed_origins).to eq(:any)
+    end
+
+    it 'returns :any when no origins option is provided (defaults to wildcard)' do
+      app = described_class.new(inner_app)
+      expect(app.allowed_origins).to eq(:any)
+    end
+
+    it 'returns an Array for an explicit list of origins' do
+      origins = ['https://one.com', 'https://two.com']
+      app = described_class.new(inner_app, origins: origins)
+      expect(app.allowed_origins).to eq(origins)
+    end
+
+    it 'wraps a single origin string in an Array' do
+      app = described_class.new(inner_app, origins: 'https://only.com')
+      expect(app.allowed_origins).to eq(['https://only.com'])
+    end
+
+    it 'preserves Regexp entries' do
+      pattern = /\.example\.com$/
+      app = described_class.new(inner_app, origins: [pattern, 'https://exact.com'])
+      expect(app.allowed_origins).to eq([pattern, 'https://exact.com'])
+    end
+
+    it 'returns an Array type (not the raw argument) for non-wildcard configs' do
+      app = described_class.new(inner_app, origins: ['https://one.com'])
+      expect(app.allowed_origins).to be_a(Array)
+    end
+
+    it 'does not break existing behavior for explicit origins' do
+      app = described_class.new(inner_app, origins: ['https://allowed.com'])
+      _status, headers, _body = app.call(env_for(origin: 'https://allowed.com'))
+      expect(headers['Access-Control-Allow-Origin']).to eq('https://allowed.com')
+    end
+  end
 end
