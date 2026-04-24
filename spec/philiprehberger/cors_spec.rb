@@ -449,4 +449,37 @@ RSpec.describe Philiprehberger::Cors::Middleware do
       expect(headers['Access-Control-Allow-Origin']).to eq('https://allowed.com')
     end
   end
+
+  describe '#allows_origin?' do
+    it 'returns true for any origin when wildcard is configured' do
+      app = described_class.new(inner_app, origins: '*')
+      expect(app.allows_origin?('https://anywhere.com')).to be true
+    end
+
+    it 'returns true for an exact string match' do
+      app = described_class.new(inner_app, origins: ['https://allowed.com'])
+      expect(app.allows_origin?('https://allowed.com')).to be true
+    end
+
+    it 'returns false for a string that is not in the list' do
+      app = described_class.new(inner_app, origins: ['https://allowed.com'])
+      expect(app.allows_origin?('https://other.com')).to be false
+    end
+
+    it 'returns true for a Regexp match' do
+      app = described_class.new(inner_app, origins: [/\.example\.com$/])
+      expect(app.allows_origin?('https://api.example.com')).to be true
+    end
+
+    it 'returns false for a Regexp non-match' do
+      app = described_class.new(inner_app, origins: [/\.example\.com$/])
+      expect(app.allows_origin?('https://evil.test')).to be false
+    end
+
+    it 'accepts a single origin string without an Array wrapper' do
+      app = described_class.new(inner_app, origins: 'https://only.com')
+      expect(app.allows_origin?('https://only.com')).to be true
+      expect(app.allows_origin?('https://else.com')).to be false
+    end
+  end
 end

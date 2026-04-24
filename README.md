@@ -105,6 +105,16 @@ wildcard = Philiprehberger::Cors::Middleware.new(app, origins: '*')
 wildcard.allowed_origins   # => :any
 ```
 
+### Checking a Specific Origin
+
+Unit-test your CORS policy without building a Rack env:
+
+```ruby
+middleware = Philiprehberger::Cors::Middleware.new(app, origins: [/\.example\.com$/])
+middleware.allows_origin?('https://api.example.com') # => true
+middleware.allows_origin?('https://evil.test')       # => false
+```
+
 ## API
 
 ### `Cors::Middleware`
@@ -113,6 +123,7 @@ wildcard.allowed_origins   # => :any
 |--------|-------------|
 | `.new(app, origins:, methods:, headers:, credentials:, max_age:, expose_headers:, allow_private_network:)` | Create CORS middleware |
 | `#allowed_origins` | Return the configured origins (Array) or `:any` when wildcard |
+| `#allows_origin?(origin)` | Return `true` if the given origin is permitted by the configured policy |
 
 ### Options
 

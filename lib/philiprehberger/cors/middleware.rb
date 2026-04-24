@@ -72,6 +72,19 @@ module Philiprehberger
         Array(@origins)
       end
 
+      # Check whether a given origin is permitted by the configured policy.
+      #
+      # Public wrapper around the internal origin-matching logic. Accepts
+      # wildcard (`'*'`), exact-string, and `Regexp` entries in the
+      # configured origins list. Useful for unit-testing CORS policy without
+      # building a full Rack env.
+      #
+      # @param origin [String] an `Origin` header value to check
+      # @return [Boolean] true if the origin is allowed
+      def allows_origin?(origin)
+        origin_allowed?(origin)
+      end
+
       # Process a Rack request.
       #
       # @param env [Hash] the Rack environment

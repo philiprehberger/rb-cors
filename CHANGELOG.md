@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-04-24
+
+### Added
+- `Middleware#allows_origin?(origin)` — public predicate for testing whether a given `Origin` header would be allowed by the configured policy; honors wildcard, exact-string, and Regexp entries
+
 ## [0.4.0] - 2026-04-16
 
 ### Added
